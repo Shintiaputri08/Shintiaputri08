@@ -5,7 +5,7 @@ output: html_document
 
 # Introduction
 
-This project aims to predict how participants performed barbell lifts using accelerometer data collected from ten individuals wearing sensors on the belt, forearm, arm, and dumbbell. The target variable is **Klasifikasi**, which categorizes five different ways the barbell lifts were executed (correctly or incorrectly).
+This project aims to predict how participants performed barbell lifts using accelerometer data collected from six individuals wearing sensors on the belt, forearm, arm, and dumbbell. The target variable is **Klasifikasi**, which categorizes five different ways the barbell lifts were executed (correctly or incorrectly).
 
 The data source is the Weight Lifting Exercise Dataset from the [PUC-Rio Groupware site](http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har).
 
