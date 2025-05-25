@@ -1,4 +1,4 @@
-title: "Practical Machine Learning: Prediction Assignment Writeup"
+Title: "Practical Machine Learning: Prediction Assignment Writeup: From dataset barbell lifts"
 author: "Shintia Lestari Putri"
 date: "`r Tanggal sistem ()`"
 output: html_document
@@ -120,6 +120,182 @@ Using 5-fold cross-validation during training provides a robust estimate of the 
 # Conclusion
 
 The Random Forest model, combined with careful data cleaning and cross-validation, produced highly accurate predictions for the exercise classification task. The predictions on the test set have been saved in separate files ready for submission.
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Klasifikasi Aktivitas Angkat Barbel dengan Random Forest"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Notebook ini melanjutkan eksplorasi data dengan melakukan klasifikasi menggunakan Random Forest.\n",
+    "\n",
+    "Pastikan file dataset (`pml-training.csv`) sudah ada di folder `data/`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "metadata": {},
+   "source": [
+    "# Import library\n",
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "from sklearn.ensemble import RandomForestClassifier\n",
+    "from sklearn.model_selection import train_test_split\n",
+    "from sklearn.metrics import classification_report, accuracy_score, confusion_matrix\n",
+    "import matplotlib.pyplot as plt\n",
+    "import seaborn as sns"
+   ],
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Load dan Bersihkan Data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "metadata": {},
+   "source": [
+    "# Load data\n",
+    "df = pd.read_csv('../data/pml-training.csv')\n",
+    "print(f\"Jumlah baris: {df.shape[0]}, Jumlah kolom: {df.shape[1]}\")"
+   ],
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "metadata": {},
+   "source": [
+    "# Hapus kolom dengan missing value > 90%\n",
+    "threshold = 0.9 * len(df)\n",
+    "df = df.dropna(axis=1, thresh=threshold)\n",
+    "\n",
+    "# Hapus kolom metadata\n",
+    "cols_to_drop = ['X', 'user_name', 'raw_timestamp_part_1', 'raw_timestamp_part_2', \n",
+    "                'cvtd_timestamp', 'new_window', 'num_window']\n",
+    "df = df.drop(columns=[col for col in cols_to_drop if col in df.columns], errors='ignore')\n",
+    "\n",
+    "print(f\"Setelah pembersihan: {df.shape[0]} baris, {df.shape[1]} kolom\")"
+   ],
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Pisahkan Fitur dan Target"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "metadata": {},
+   "source": [
+    "# Target (kelas) adalah kolom 'classe'\n",
+    "X = df.drop(columns=['classe'])\n",
+    "y = df['classe']\n",
+    "\n",
+    "print(X.shape, y.shape)"
+   ],
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Split Data: Train & Test"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "metadata": {},
+   "source": [
+    "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)\n",
+    "print(X_train.shape, X_test.shape)"
+   ],
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Training Random Forest"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "metadata": {},
+   "source": [
+    "rf = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)\n",
+    "rf.fit(X_train, y_train)\n",
+    "print('Training selesai!')"
+   ],
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Evaluasi Model"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "metadata": {},
+   "source": [
+    "y_pred = rf.predict(X_test)\n",
+    "acc = accuracy_score(y_test, y_pred)\n",
+    "print(f'Akurasi pada data test: {acc:.4f}')\n",
+    "print('\\nClassification Report:')\n",
+    "print(classification_report(y_test, y_pred))"
+   ],
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "metadata": {},
+   "source": [
+    "# Confusion Matrix\n",
+    "plt.figure(figsize=(8,6))\n",
+    "cm = confusion_matrix(y_test, y_pred, labels=rf.classes_)\n",
+    "sns.heatmap(cm, annot=True, fmt='d', xticklabels=rf.classes_, yticklabels=rf.classes_, cmap='Blues')\n",
+    "plt.xlabel('Prediksi')\n",
+    "plt.ylabel('Aktual')\n",
+    "plt.title('Confusion Matrix Random Forest')\n",
+    "plt.show()"
+   ],
+   "execution_count": null,
+   "outputs": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "name": "python",
+   "version": ""
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
 
 ---
 *Report submitted by Shintia Lestari Putri on `r Sys.Date()`*
